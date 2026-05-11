@@ -1,0 +1,601 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--c-bg:#f0f0f0;--c-card:#fff;--c-border:#e0e0e0;--c-text:#1a1a1a;--c-muted:#888;--c-pos:#2563eb;--c-pos-bg:#eff6ff;--c-scale:#7c3aed;--c-scale-bg:#f5f3ff;--c-rot:#d97706;--c-rot-bg:#fffbeb;--c-op:#059669;--c-op-bg:#ecfdf5;--c-color:#db2777;--c-color-bg:#fdf2f8;--c-trim:#0891b2;--c-trim-bg:#ecfeff;--c-other:#6b7280;--c-other-bg:#f9fafb}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--c-bg);color:var(--c-text);font-size:13px}
+.app{display:flex;flex-direction:column;height:100vh;min-height:600px;background:var(--c-bg)}
+.topbar{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--c-card);border-bottom:1px solid var(--c-border);flex-shrink:0;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.topbar-logo{font-size:14px;font-weight:600;margin-right:auto;display:flex;align-items:center;gap:7px}
+.logo-dot{width:22px;height:22px;background:#1a1a1a;border-radius:6px;display:flex;align-items:center;justify-content:center}
+.logo-dot i{color:#fff;font-size:13px}
+.tbtn{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;border:1px solid var(--c-border);background:var(--c-card);color:var(--c-text);cursor:pointer;font-size:12px;font-weight:500;transition:all .15s}
+.tbtn:hover{background:#f5f5f5;border-color:#ccc}
+.tbtn-primary{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+.tbtn-primary:hover{background:#333;opacity:1}
+.tbtn-primary:disabled{background:#ccc;border-color:#ccc;cursor:not-allowed}
+.layout{display:flex;flex:1;overflow:hidden;gap:10px;padding:10px}
+.left{display:flex;flex-direction:column;width:300px;flex-shrink:0;gap:10px}
+.right{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px}
+.card{background:var(--c-card);border-radius:12px;border:1px solid var(--c-border);overflow:hidden}
+.card-header{padding:11px 14px;border-bottom:1px solid var(--c-border);font-size:12px;font-weight:600;color:var(--c-muted);text-transform:uppercase;letter-spacing:.05em;display:flex;align-items:center;gap:7px;background:#fafafa}
+.card-body{padding:14px}
+.upload-zone{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;cursor:pointer;border:2px dashed var(--c-border);border-radius:12px;background:var(--c-card);transition:all .15s;text-align:center;padding:28px 20px;min-height:200px}
+.upload-zone:hover{border-color:#999;background:#fafafa}
+.upload-zone-icon{width:48px;height:48px;background:#f0f0f0;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:4px}
+.upload-zone-icon i{font-size:22px;color:#666}
+.upload-zone h3{font-size:13px;font-weight:600;margin-bottom:2px}
+.upload-zone p{font-size:12px;color:var(--c-muted)}
+.preview-box{position:relative;background:#f8f8f8;border-radius:12px;border:1px solid var(--c-border);display:flex;align-items:center;justify-content:center;min-height:200px;overflow:hidden}
+.preview-box.dark{background:#141414}
+.preview-box.checker{background:repeating-conic-gradient(#e0e0e0 0% 25%,#fff 0% 50%) 0 0/20px 20px}
+.bg-switcher{position:absolute;top:8px;right:8px;display:flex;gap:3px;background:rgba(255,255,255,.8);border-radius:6px;padding:3px;border:1px solid rgba(0,0,0,.08)}
+.bg-dot{width:16px;height:16px;border-radius:4px;cursor:pointer;border:1px solid rgba(0,0,0,.15)}
+.playbar{display:flex;align-items:center;gap:8px;padding:8px 12px;background:#fafafa;border-top:1px solid var(--c-border)}
+.playbar input[type=range]{flex:1;height:3px;accent-color:#1a1a1a}
+.time-tag{font-size:11px;font-family:monospace;color:var(--c-muted);min-width:70px;text-align:right}
+.play-btn{width:28px;height:28px;border-radius:8px;border:1px solid var(--c-border);background:var(--c-card);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.play-btn i{font-size:13px}
+.meta-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.meta-chip{background:#f5f5f5;border-radius:8px;padding:10px 12px;border:1px solid var(--c-border)}
+.meta-chip-label{font-size:10px;color:var(--c-muted);margin-bottom:2px;font-weight:500;text-transform:uppercase;letter-spacing:.04em}
+.meta-chip-val{font-size:18px;font-weight:600;font-family:monospace;line-height:1}
+.meta-chip-unit{font-size:11px;color:var(--c-muted);font-weight:400}
+.layer-list-wrap{flex:1;overflow-y:auto;max-height:260px}
+.layer-row{display:flex;align-items:center;gap:8px;padding:8px 12px;cursor:pointer;border-bottom:1px solid #f5f5f5;transition:background .1s}
+.layer-row:hover{background:#fafafa}
+.layer-row.sel{background:#eff6ff;border-left:2px solid #2563eb}
+.layer-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.layer-name{flex:1;font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.layer-badge{font-size:10px;padding:2px 6px;border-radius:4px;background:#f0f0f0;color:#666;flex-shrink:0}
+.right-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--c-muted);padding:40px}
+.right-empty i{font-size:40px;opacity:.3}
+.right-empty p{font-size:13px;text-align:center;max-width:200px;line-height:1.6}
+.overview-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:14px}
+.ov-chip{background:#f5f5f5;border:1px solid var(--c-border);border-radius:10px;padding:12px 14px}
+.ov-label{font-size:10px;color:var(--c-muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;font-weight:500}
+.ov-val{font-size:20px;font-weight:700;font-family:monospace;line-height:1}
+.ov-unit{font-size:11px;color:var(--c-muted);font-weight:400}
+.tl-wrap{padding:14px}
+.tl-header{display:flex;margin-bottom:4px;padding-left:110px}
+.tl-ruler-tick{flex:1;font-size:10px;color:var(--c-muted);font-family:monospace}
+.tl-row{display:flex;align-items:center;gap:0;margin-bottom:3px}
+.tl-label{width:110px;font-size:11px;color:var(--c-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:8px;text-align:right}
+.tl-track{flex:1;height:26px;background:#f5f5f5;border-radius:5px;position:relative;overflow:hidden;border:1px solid var(--c-border)}
+.tl-bar{position:absolute;top:3px;height:20px;border-radius:3px;opacity:.75;display:flex;align-items:center;padding:0 6px}
+.tl-bar-label{font-size:10px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl-kf{position:absolute;top:50%;width:7px;height:7px;border-radius:50%;transform:translate(-50%,-50%);border:1.5px solid #fff;z-index:2}
+.detail-wrap{display:flex;flex-direction:column;gap:10px;padding:14px}
+.prop-card{border-radius:10px;border:1px solid;overflow:hidden}
+.prop-card-header{padding:10px 13px;display:flex;align-items:center;gap:8px}
+.prop-type-tag{font-size:11px;font-weight:700;padding:2px 8px;border-radius:5px;letter-spacing:.03em}
+.prop-name{font-size:13px;font-weight:600;flex:1}
+.prop-anim-badge{font-size:10px;padding:2px 7px;border-radius:4px;font-weight:500}
+.kf-section{padding:0 13px 12px}
+.kf-track-wrap{background:rgba(0,0,0,.04);border-radius:6px;height:28px;position:relative;margin-bottom:10px;overflow:visible}
+.kf-track-line{position:absolute;top:50%;height:1px;background:rgba(0,0,0,.12);left:0;right:0;transform:translateY(-50%)}
+.kf-diamond{position:absolute;top:50%;width:9px;height:9px;transform:translate(-50%,-50%) rotate(45deg);border:1.5px solid #fff;border-radius:1px;cursor:pointer;z-index:2}
+.kf-table{width:100%;border-collapse:collapse}
+.kf-table th{text-align:left;padding:5px 8px;font-size:10px;font-weight:600;color:var(--c-muted);text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid rgba(0,0,0,.08)}
+.kf-table td{padding:7px 8px;font-size:12px;font-family:monospace;border-bottom:1px solid rgba(0,0,0,.05)}
+.kf-table tr:last-child td{border-bottom:none}
+.kf-table tr:hover td{background:rgba(0,0,0,.02)}
+.copy-cell{cursor:pointer;opacity:0;transition:opacity .15s;color:var(--c-muted)}
+.kf-table tr:hover .copy-cell{opacity:1}
+.copy-cell:hover{color:var(--c-text)}
+.summary-bar{padding:8px 13px;border-top:1px solid rgba(0,0,0,.06);display:flex;align-items:center;gap:8px;background:rgba(0,0,0,.02)}
+.summary-text{font-size:12px;font-family:monospace;flex:1}
+.copy-summary{cursor:pointer;padding:4px 9px;border-radius:5px;border:1px solid rgba(0,0,0,.12);background:transparent;font-size:11px;display:flex;align-items:center;gap:4px}
+.copy-summary:hover{background:rgba(0,0,0,.05)}
+.toast{position:fixed;bottom:16px;right:16px;background:#1a1a1a;color:#fff;padding:8px 16px;border-radius:8px;font-size:12px;font-weight:500;opacity:0;transition:opacity .25s;pointer-events:none;z-index:9999}
+.toast.show{opacity:1}
+.section-label{font-size:11px;font-weight:600;color:var(--c-muted);text-transform:uppercase;letter-spacing:.05em;padding:12px 14px 6px;border-top:1px solid var(--c-border)}
+.section-label:first-child{border-top:none}
+.no-anim-note{padding:20px;text-align:center;color:var(--c-muted);font-size:12px}
+</style>
+
+<div class="app">
+<div class="topbar">
+  <div class="topbar-logo"><div class="logo-dot"><i class="ti ti-wand" aria-hidden="true"></i></div>Lottie Inspector</div>
+  <button class="tbtn" id="sampleBtn"><i class="ti ti-file-text" aria-hidden="true"></i>加载示例</button>
+  <label class="tbtn" style="cursor:pointer"><i class="ti ti-upload" aria-hidden="true"></i>上传 JSON<input type="file" accept=".json" id="fileInput" style="display:none"></label>
+  <button class="tbtn tbtn-primary" id="exportBtn" disabled><i class="ti ti-package" aria-hidden="true"></i>打包交付开发</button>
+</div>
+
+<div class="layout">
+  <div class="left">
+    <div id="uploadWrap">
+      <label class="upload-zone" for="fileInput" id="dropZone">
+        <div class="upload-zone-icon"><i class="ti ti-file-upload" aria-hidden="true"></i></div>
+        <h3>拖拽或点击上传</h3>
+        <p>支持 Lottie JSON 格式</p>
+      </label>
+    </div>
+
+    <div id="playerWrap" style="display:none;flex-direction:column;gap:10px">
+      <div class="preview-box" id="previewBox">
+        <div id="lottieMount" style="width:180px;height:180px"></div>
+        <div class="bg-switcher">
+          <div class="bg-dot" style="background:#f8f8f8" title="浅" onclick="setBg('light')"></div>
+          <div class="bg-dot" style="background:#141414" title="深" onclick="setBg('dark')"></div>
+          <div class="bg-dot" style="background:transparent;background-image:repeating-conic-gradient(#ccc 0% 25%,#fff 0% 50%);background-size:10px 10px" title="透明" onclick="setBg('checker')"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="playbar">
+          <button class="play-btn" id="playBtn"><i class="ti ti-player-play" aria-hidden="true"></i></button>
+          <input type="range" id="scrubber" min="0" max="100" value="0" step="0.1">
+          <span class="time-tag" id="timeTag">0.00s</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><i class="ti ti-layout-list" aria-hidden="true"></i>图层</div>
+        <div class="layer-list-wrap" id="layerList"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="right" id="rightPanel">
+    <div class="right-empty">
+      <i class="ti ti-player-play" aria-hidden="true"></i>
+      <p>上传 Lottie 文件后，动画参数将在这里显示</p>
+    </div>
+  </div>
+</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+<script>
+const LAYER_TYPES={0:'Precomp',1:'Solid',2:'Image',3:'Null',4:'Shape',5:'Text',6:'Audio',13:'Camera',14:'Light'};
+const COLORS=['#2563eb','#7c3aed','#db2777','#d97706','#059669','#0891b2','#dc2626','#65a30d'];
+const PROP_META={
+  p:{label:'位置',short:'POS',color:'#2563eb',bg:'#eff6ff',unit:''},
+  s:{label:'缩放',short:'SCL',color:'#7c3aed',bg:'#f5f3ff',unit:'%'},
+  r:{label:'旋转',short:'ROT',color:'#d97706',bg:'#fffbeb',unit:'°'},
+  o:{label:'透明度',short:'OPA',color:'#059669',bg:'#ecfdf5',unit:'%'},
+  a:{label:'锚点',short:'ANC',color:'#6b7280',bg:'#f9fafb',unit:''},
+  sk:{label:'倾斜',short:'SKW',color:'#0891b2',bg:'#ecfeff',unit:'°'},
+  c:{label:'颜色',short:'CLR',color:'#db2777',bg:'#fdf2f8',unit:''},
+  w:{label:'描边宽度',short:'STW',color:'#0891b2',bg:'#ecfeff',unit:''},
+  'start':{label:'路径起点',short:'TRS',color:'#059669',bg:'#ecfdf5',unit:'%'},
+  'end':{label:'路径终点',short:'TRE',color:'#7c3aed',bg:'#f5f3ff',unit:'%'},
+  'offset':{label:'路径偏移',short:'TRO',color:'#d97706',bg:'#fffbeb',unit:'°'},
+};
+
+let lottieData=null,anim=null,playing=true,selLayer=-1;
+
+const $=id=>document.getElementById(id);
+const fileInput=$('fileInput'),exportBtn=$('exportBtn'),uploadWrap=$('uploadWrap'),playerWrap=$('playerWrap'),rightPanel=$('rightPanel'),playBtn=$('playBtn'),scrubber=$('scrubber'),timeTag=$('timeTag'),layerList=$('layerList'),previewBox=$('previewBox');
+
+fileInput.addEventListener('change',e=>{if(e.target.files[0])loadFile(e.target.files[0])});
+const dropZone=$('dropZone');
+dropZone.addEventListener('dragover',e=>{e.preventDefault();dropZone.style.background='#f0f8ff'});
+dropZone.addEventListener('dragleave',()=>{dropZone.style.background=''});
+dropZone.addEventListener('drop',e=>{e.preventDefault();dropZone.style.background='';if(e.dataTransfer.files[0])loadFile(e.dataTransfer.files[0])});
+$('sampleBtn').addEventListener('click',loadSample);
+exportBtn.addEventListener('click',exportDelivery);
+
+function loadFile(file){
+  const r=new FileReader();
+  r.onload=e=>{try{init(JSON.parse(e.target.result))}catch(err){toast('解析失败：'+err.message)}};
+  r.readAsText(file);
+}
+
+function init(data){
+  lottieData=data;
+  uploadWrap.style.display='none';
+  playerWrap.style.display='flex';
+  exportBtn.disabled=false;
+  selLayer=-1;
+  if(anim){anim.destroy()}
+  const m=$('lottieMount');m.innerHTML='';
+  anim=lottie.loadAnimation({container:m,renderer:'svg',loop:true,autoplay:true,animationData:JSON.parse(JSON.stringify(data))});
+  playing=true;
+  playBtn.innerHTML='<i class="ti ti-player-pause" aria-hidden="true"></i>';
+  const dur=data.op/data.fr;
+  anim.addEventListener('enterFrame',()=>{
+    const t=anim.currentFrame/data.fr;
+    scrubber.value=(anim.currentFrame/data.op)*100;
+    timeTag.textContent=t.toFixed(2)+'s';
+  });
+  buildLayerList(data);
+  renderOverview(data);
+}
+
+playBtn.addEventListener('click',()=>{
+  if(playing){anim.pause();playing=false;playBtn.innerHTML='<i class="ti ti-player-play" aria-hidden="true"></i>'}
+  else{anim.play();playing=true;playBtn.innerHTML='<i class="ti ti-player-pause" aria-hidden="true"></i>'}
+});
+scrubber.addEventListener('input',()=>{
+  if(!anim)return;
+  anim.pause();playing=false;playBtn.innerHTML='<i class="ti ti-player-play" aria-hidden="true"></i>';
+  anim.goToAndStop((scrubber.value/100)*lottieData.op,true);
+});
+
+function setBg(m){previewBox.className='preview-box'+(m!=='light'?' '+m:'')}
+
+function buildLayerList(data){
+  layerList.innerHTML='';
+  (data.layers||[]).forEach((l,i)=>{
+    const color=COLORS[i%COLORS.length];
+    const div=document.createElement('div');
+    div.className='layer-row';
+    div.innerHTML=`<div class="layer-dot" style="background:${color}"></div><span class="layer-name">${l.nm||'Layer '+i}</span><span class="layer-badge">${LAYER_TYPES[l.ty]||l.ty}</span>`;
+    div.onclick=()=>{selLayer=i;document.querySelectorAll('.layer-row').forEach(x=>x.classList.remove('sel'));div.classList.add('sel');renderLayerDetail(l,i,color,data)};
+    layerList.appendChild(div);
+  });
+}
+
+function renderOverview(data){
+  const fps=data.fr,total=data.op-data.ip,dur=total/fps;
+  rightPanel.innerHTML=`
+  <div class="card">
+    <div class="card-header"><i class="ti ti-chart-bar" aria-hidden="true"></i>动画概览</div>
+    <div class="overview-grid">
+      <div class="ov-chip"><div class="ov-label">总时长</div><div class="ov-val">${(dur*1000).toFixed(0)}<span class="ov-unit"> ms</span></div></div>
+      <div class="ov-chip"><div class="ov-label">帧率</div><div class="ov-val">${fps}<span class="ov-unit"> fps</span></div></div>
+      <div class="ov-chip"><div class="ov-label">尺寸</div><div class="ov-val" style="font-size:14px">${data.w}<span class="ov-unit">×</span>${data.h}</div></div>
+      <div class="ov-chip"><div class="ov-label">图层数</div><div class="ov-val">${(data.layers||[]).length}</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><i class="ti ti-timeline" aria-hidden="true"></i>图层时间轴</div>
+    <div class="tl-wrap">${buildTimeline(data)}</div>
+  </div>
+  <div class="card">
+    <div class="card-header"><i class="ti ti-hand-click" aria-hidden="true"></i>点击左侧图层查看详细动画参数</div>
+    <div style="padding:20px;text-align:center;color:var(--c-muted);font-size:12px">选择图层后将展示位移、缩放、旋转、透明度、颜色等所有动画属性</div>
+  </div>`;
+}
+
+function buildTimeline(data){
+  const layers=data.layers||[],fps=data.fr,total=data.op-data.ip;
+  const durMs=(total/fps*1000).toFixed(0);
+  let h=`<div class="tl-header"><span class="tl-ruler-tick">0ms</span><span class="tl-ruler-tick" style="text-align:center">${(durMs/2).toFixed(0)}ms</span><span class="tl-ruler-tick" style="text-align:right">${durMs}ms</span></div>`;
+  layers.forEach((l,i)=>{
+    const color=COLORS[i%COLORS.length];
+    const ip=Math.max(0,l.ip||0),op=Math.min(data.op,l.op||data.op);
+    const left=((ip-data.ip)/total*100).toFixed(1);
+    const width=Math.max(2,((op-ip)/total*100)).toFixed(1);
+    const kfs=getKFs(l);
+    h+=`<div class="tl-row"><div class="tl-label">${l.nm||'L'+i}</div><div class="tl-track">
+      <div class="tl-bar" style="left:${left}%;width:${width}%;background:${color}">
+        <span class="tl-bar-label">${l.nm||'L'+i}</span>
+      </div>
+      ${kfs.map(f=>`<div class="tl-kf" style="left:${((f-data.ip)/total*100).toFixed(1)}%;background:${color}"></div>`).join('')}
+    </div></div>`;
+  });
+  return h;
+}
+
+function getKFs(layer){
+  const s=new Set();
+  function scan(o){if(!o||typeof o!=='object')return;if(Array.isArray(o.k)&&o.k.length>0&&typeof o.k[0]==='object'&&o.k[0].t!==undefined)o.k.forEach(kf=>{if(kf.t!==undefined)s.add(kf.t)});Object.values(o).forEach(v=>{if(v&&typeof v==='object')scan(v)})}
+  scan(layer);return[...s].sort((a,b)=>a-b);
+}
+
+function renderLayerDetail(layer,idx,color,data){
+  const fps=data.fr,total=data.op-data.ip;
+  const dur=((layer.op||data.op)-(layer.ip||data.ip))/fps*1000;
+  const delay=((layer.ip||data.ip)-data.ip)/fps*1000;
+  let animProps=[];
+  if(layer.ks){
+    ['p','s','r','o','a','sk'].forEach(k=>{if(layer.ks[k])tryAddProp(animProps,k,layer.ks[k],fps)});
+  }
+  collectShapeProps(layer.shapes||[],animProps,fps);
+
+  rightPanel.innerHTML=`
+  <div class="card">
+    <div class="card-header" style="gap:8px">
+      <div style="width:10px;height:10px;border-radius:50%;background:${color};flex-shrink:0"></div>
+      <span style="flex:1;color:var(--c-text);font-size:13px;font-weight:600">${layer.nm||'Layer '+idx}</span>
+      <span class="layer-badge">${LAYER_TYPES[layer.ty]||layer.ty}</span>
+    </div>
+    <div class="overview-grid" style="grid-template-columns:repeat(3,1fr)">
+      <div class="ov-chip"><div class="ov-label">持续时长</div><div class="ov-val">${dur.toFixed(0)}<span class="ov-unit"> ms</span></div></div>
+      <div class="ov-chip"><div class="ov-label">开始延迟</div><div class="ov-val">${delay.toFixed(0)}<span class="ov-unit"> ms</span></div></div>
+      <div class="ov-chip"><div class="ov-label">帧范围</div><div class="ov-val" style="font-size:14px">${layer.ip||0}<span class="ov-unit">→</span>${layer.op||data.op}</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><i class="ti ti-timeline" aria-hidden="true"></i>属性时间轴</div>
+    <div class="tl-wrap">${buildPropTimeline(animProps,fps,data)}</div>
+  </div>
+  <div class="card">
+    <div class="card-header"><i class="ti ti-adjustments" aria-hidden="true"></i>动画属性 <span style="margin-left:auto;font-weight:400;text-transform:none;font-size:11px;letter-spacing:0;color:var(--c-muted)">${animProps.length} 个动画属性</span></div>
+    <div class="detail-wrap">${animProps.length?animProps.map(p=>buildPropCard(p,fps,data)).join(''):'<div class="no-anim-note">此图层无动画属性（静态图层）</div>'}</div>
+  </div>`;
+}
+
+function tryAddProp(list,key,prop,fps){
+  const isAnim=Array.isArray(prop.k)&&prop.k.length>0&&typeof prop.k[0]==='object'&&prop.k[0].t!==undefined;
+  if(!isAnim)return;
+  const meta=PROP_META[key]||{label:key,short:key.toUpperCase(),color:'#6b7280',bg:'#f9fafb',unit:''};
+  list.push({key,meta,keyframes:prop.k,unit:meta.unit});
+}
+
+function collectShapeProps(shapes,list,fps){
+  shapes.forEach(sh=>{
+    if(sh.ty==='fl'&&sh.c)tryAddColorProp(list,'c',sh.c,fps,sh.nm||'Fill');
+    if(sh.ty==='st'&&sh.c)tryAddColorProp(list,'c',sh.c,fps,sh.nm||'Stroke');
+    if(sh.ty==='st'&&sh.w)tryAddProp(list,'w',sh.w,fps);
+    if(sh.ty==='tm'){if(sh.s)tryAddProp(list,'start',sh.s,fps);if(sh.e)tryAddProp(list,'end',sh.e,fps);if(sh.o)tryAddProp(list,'offset',sh.o,fps);}
+    if(sh.ty==='tr'){['p','s','r','o'].forEach(k=>{if(sh[k])tryAddProp(list,k,sh[k],fps)})}
+    if(sh.it)collectShapeProps(sh.it,list,fps);
+  });
+}
+
+function tryAddColorProp(list,key,prop,fps,name){
+  const isAnim=Array.isArray(prop.k)&&prop.k.length>0&&typeof prop.k[0]==='object'&&prop.k[0].t!==undefined;
+  if(!isAnim)return;
+  const meta={...PROP_META[key],label:name};
+  list.push({key,meta,keyframes:prop.k,unit:'',isColor:true});
+}
+
+function buildPropTimeline(props,fps,data){
+  if(!props.length)return'<div style="padding:10px;text-align:center;color:var(--c-muted);font-size:12px">无动画属性</div>';
+  const total=data.op-data.ip;
+  const durMs=(total/fps*1000).toFixed(0);
+  let h=`<div class="tl-header"><span class="tl-ruler-tick">0ms</span><span class="tl-ruler-tick" style="text-align:center">${(durMs/2).toFixed(0)}ms</span><span class="tl-ruler-tick" style="text-align:right">${durMs}ms</span></div>`;
+  props.forEach(p=>{
+    const kfs=p.keyframes.filter(k=>k.t!==undefined);
+    if(!kfs.length)return;
+    const firstF=kfs[0].t,lastF=kfs[kfs.length-1].t;
+    const left=((firstF-data.ip)/total*100).toFixed(1);
+    const width=Math.max(1,((lastF-firstF)/total*100)).toFixed(1);
+    h+=`<div class="tl-row"><div class="tl-label" style="color:${p.meta.color};font-weight:600">${p.meta.short}</div><div class="tl-track">
+      <div class="tl-bar" style="left:${left}%;width:${width}%;background:${p.meta.color}55;border:1px solid ${p.meta.color}88"></div>
+      ${kfs.map(kf=>`<div class="tl-kf" style="left:${((kf.t-data.ip)/total*100).toFixed(1)}%;background:${p.meta.color}"></div>`).join('')}
+    </div></div>`;
+  });
+  return h;
+}
+
+function buildPropCard(prop,fps,data){
+  const kfs=prop.keyframes.filter(k=>k.t!==undefined);
+  const m=prop.meta;
+  const totalMs=(data.op-data.ip)/fps*1000;
+
+  let kfRows=kfs.map((kf,i)=>{
+    const tMs=(kf.t/fps*1000).toFixed(0);
+    const nextKf=kfs[i+1];
+    const delay=tMs;
+    const dur=nextKf?((nextKf.t-kf.t)/fps*1000).toFixed(0):'—';
+    const val=kf.s?formatVal(kf.s,prop.unit,prop.isColor):(kf.e?formatVal(kf.e,prop.unit,prop.isColor):'—');
+    const toVal=kf.e?formatVal(kf.e,prop.unit,prop.isColor):(nextKf&&nextKf.s?formatVal(nextKf.s,prop.unit,prop.isColor):'—');
+    const ease=kf.o?formatEase(kf.o):'linear';
+    const colorDot=prop.isColor&&kf.s?`<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${lottieColorToHex(kf.s)};border:1px solid rgba(0,0,0,.15);vertical-align:middle;margin-right:4px"></span>`:'';
+    const toColorDot=prop.isColor&&kf.e?`<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${lottieColorToHex(kf.e)};border:1px solid rgba(0,0,0,.15);vertical-align:middle;margin-right:4px"></span>`:'';
+    const copyStr=`Delay: ${delay}ms\nDur: ${dur}ms\nVal: ${val} → ${toVal}\n${ease}`;
+    return`<tr>
+      <td style="font-weight:600;color:${m.color}">${tMs}ms</td>
+      <td style="color:var(--c-muted)">${dur}ms</td>
+      <td>${colorDot}${val}</td>
+      <td>${nextKf?toColorDot+toVal:'—'}</td>
+      <td style="color:var(--c-muted);font-style:italic">${ease}</td>
+      <td class="copy-cell" onclick="copyText('${copyStr.replace(/\n/g,'\\n').replace(/'/g,"\\'")}')"><i class="ti ti-copy" aria-hidden="true"></i></td>
+    </tr>`;
+  }).join('');
+
+  const firstKf=kfs[0],lastKf=kfs[kfs.length-1];
+  const fromVal=firstKf&&firstKf.s?formatVal(firstKf.s,prop.unit,prop.isColor):'?';
+  const toVal=firstKf&&firstKf.e?formatVal(firstKf.e,prop.unit,prop.isColor):(lastKf&&lastKf.s?formatVal(lastKf.s,prop.unit,prop.isColor):'?');
+  const delayMs=(firstKf?firstKf.t/fps*1000:0).toFixed(0);
+  const durMs=(firstKf&&lastKf?(lastKf.t-firstKf.t)/fps*1000:0).toFixed(0);
+  const easeFirst=firstKf&&firstKf.o?formatEase(firstKf.o):'linear';
+  const summary=`Delay: ${delayMs}ms  Dur: ${durMs}ms  Val: ${fromVal} → ${toVal}  ${easeFirst}`;
+
+  const trackW=400;
+  let kfDots='';
+  if(kfs.length){
+    const minT=kfs[0].t,maxT=kfs[kfs.length-1].t,range=maxT-minT||1;
+    kfs.forEach(kf=>{const pct=(kf.t-minT)/range*90+5;kfDots+=`<div class="kf-diamond" style="left:${pct.toFixed(1)}%;background:${m.color}"></div>`});
+  }
+
+  return`<div class="prop-card" style="border-color:${m.color}33">
+    <div class="prop-card-header" style="background:${m.bg}">
+      <span class="prop-type-tag" style="background:${m.color};color:#fff">${m.short}</span>
+      <span class="prop-name">${m.label}</span>
+      <span class="prop-anim-badge" style="background:${m.color}22;color:${m.color}">${kfs.length} 帧</span>
+    </div>
+    <div class="kf-section">
+      <div class="kf-track-wrap" style="margin-top:10px">
+        <div class="kf-track-line"></div>
+        ${kfDots}
+      </div>
+      <table class="kf-table">
+        <tr><th>Delay</th><th>Dur</th><th>From</th><th>To</th><th>Curve</th><th></th></tr>
+        ${kfRows}
+      </table>
+    </div>
+    <div class="summary-bar">
+      <span style="font-size:10px;color:${m.color};font-weight:700;margin-right:6px">${m.short}</span>
+      <span class="summary-text" style="color:var(--c-muted)">${summary}</span>
+      <button class="copy-summary" onclick="copyText('${summary.replace(/'/g,"\\'")}')"><i class="ti ti-copy" aria-hidden="true" style="font-size:11px"></i>复制</button>
+    </div>
+  </div>`;
+}
+
+function formatVal(k,unit,isColor){
+  if(isColor)return lottieColorToHex(k);
+  if(Array.isArray(k))return k.map(v=>+v.toFixed(1)).join(', ')+unit;
+  if(typeof k==='number')return k.toFixed(1)+unit;
+  return String(k);
+}
+
+function formatEase(o){
+  if(!o)return'linear';
+  const x=Array.isArray(o.x)?o.x[0]:o.x,y=Array.isArray(o.y)?o.y[0]:o.y;
+  if(x===undefined)return'linear';
+  if(x===0&&y===0)return'ease-in';
+  if(x===1&&y===1)return'ease-out';
+  if(Math.abs(x-.42)<.05&&Math.abs(y-0)<.05)return'ease';
+  return`cubic-bezier(${+x.toFixed(2)},${+y.toFixed(2)},${Array.isArray(o.x)?+(o.x[1]||1).toFixed(2):1},${Array.isArray(o.y)?+(o.y[1]||1).toFixed(2):1})`;
+}
+
+function lottieColorToHex(c){
+  if(!Array.isArray(c)||c.length<3)return'#000';
+  const h=v=>Math.round(Math.min(1,Math.max(0,v))*255).toString(16).padStart(2,'0');
+  return'#'+h(c[0])+h(c[1])+h(c[2]);
+}
+
+function copyText(text){
+  navigator.clipboard.writeText(text.replace(/\\n/g,'\n')).then(()=>toast('已复制'));
+}
+
+function toast(msg){
+  const t=$('toast');t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2000);
+}
+
+function exportDelivery(){
+  if(!lottieData)return;
+  const layers=(lottieData.layers||[]).map((l,i)=>{
+    const fps=lottieData.fr,data=lottieData;
+    const props=[];
+    if(l.ks){['p','s','r','o','a','sk'].forEach(k=>{if(l.ks[k])tryAddProp(props,k,l.ks[k],fps)})}
+    collectShapeProps(l.shapes||[],props,fps);
+    return{name:l.nm||'Layer '+i,type:LAYER_TYPES[l.ty]||l.ty,color:COLORS[i%COLORS.length],ip:l.ip||0,op:l.op||data.op,delayMs:((l.ip||0)/fps*1000).toFixed(0),durMs:(((l.op||data.op)-(l.ip||0))/fps*1000).toFixed(0),props};
+  });
+  const html=buildDeliveryHTML(layers);
+  const blob=new Blob([html],{type:'text/html'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=(lottieData.nm||'animation')+'_开发交付.html';a.click();
+  toast('已导出交付文件！');
+}
+
+function buildDeliveryHTML(layers){
+  const d=lottieData,fps=d.fr,total=d.op-d.ip,dur=(total/fps*1000).toFixed(0);
+  const layerCards=layers.map((l,li)=>{
+    if(!l.props.length)return`<div class="lcard"><div class="lcard-head" style="border-left:3px solid ${l.color}"><span class="lname">${l.name}</span><span class="ltag">${l.type}</span><span class="lmeta">无动画属性</span></div></div>`;
+    const propCards=l.props.map(p=>{
+      const kfs=p.keyframes.filter(k=>k.t!==undefined);
+      const rows=kfs.map((kf,i)=>{
+        const tMs=(kf.t/fps*1000).toFixed(0);
+        const nextKf=kfs[i+1];
+        const dur2=nextKf?((nextKf.t-kf.t)/fps*1000).toFixed(0):'—';
+        const val=kf.s?formatVal(kf.s,p.unit,p.isColor):'—';
+        const toVal=kf.e?formatVal(kf.e,p.unit,p.isColor):(nextKf&&nextKf.s?formatVal(nextKf.s,p.unit,p.isColor):'—');
+        const ease=kf.o?formatEase(kf.o):'linear';
+        const cdot=p.isColor&&kf.s?`<span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:${lottieColorToHex(kf.s)};border:1px solid rgba(0,0,0,.2);vertical-align:middle;margin-right:3px"></span>`:'';
+        const tcdot=p.isColor&&kf.e?`<span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:${lottieColorToHex(kf.e)};border:1px solid rgba(0,0,0,.2);vertical-align:middle;margin-right:3px"></span>`:'';
+        const copyStr=`= ${l.name} =\n- ${p.meta.label} -\nDelay: ${tMs}ms\nDur: ${dur2}ms\nVal: [${val}]>>[${toVal}]\n${ease}`;
+        return`<div class="krow" onclick="cp('${copyStr.replace(/\n/g,'\\n').replace(/'/g,"\\'")}',this)">
+          <div class="krow-main">
+            <span class="kval"><b>Delay</b> ${tMs}ms</span>
+            <span class="kval"><b>Dur</b> ${dur2}ms</span>
+            <span class="kval"><b>Val</b> ${cdot}[${val}] → ${tcdot}[${toVal}]</span>
+            <span class="kval curve-val"><b>Curve</b> ${ease}</span>
+          </div>
+          <span class="copy-hint">点击复制</span>
+        </div>`;
+      }).join('');
+
+      const m=p.meta;
+      const miniKfs=kfs.filter(k=>k.t!==undefined);
+      const minT=miniKfs[0]?.t||0,maxT=miniKfs[miniKfs.length-1]?.t||d.op;
+      const range=maxT-minT||1;
+      const dots=miniKfs.map(kf=>{const pct=(kf.t-minT)/range*92+4;return`<div style="position:absolute;top:50%;left:${pct.toFixed(1)}%;width:8px;height:8px;border-radius:2px;transform:translate(-50%,-50%) rotate(45deg);background:${m.color};border:1.5px solid #fff"></div>`}).join('');
+      const barLeft=((minT-d.ip)/total*100).toFixed(1);
+      const barW=Math.max(1,((maxT-minT)/total*100)).toFixed(1);
+
+      return`<div class="pcard" style="border-color:${m.color}44">
+        <div class="pcard-head" style="background:${m.bg}">
+          <span class="ptag" style="background:${m.color};color:#fff">${m.short}</span>
+          <span class="pname">${m.label}</span>
+          <span class="pkfs">${kfs.length} keyframes</span>
+        </div>
+        <div class="tl-mini">
+          <div style="position:absolute;top:50%;height:1px;background:#ddd;left:0;right:0;transform:translateY(-50%)"></div>
+          <div style="position:absolute;top:3px;left:${barLeft}%;width:${barW}%;height:calc(100% - 6px);background:${m.color}22;border-radius:3px;border:1px solid ${m.color}44"></div>
+          ${dots}
+        </div>
+        ${rows}
+      </div>`;
+    }).join('');
+    return`<div class="lcard">
+      <div class="lcard-head" style="border-left:3px solid ${l.color}">
+        <span class="lname">${l.name}</span>
+        <span class="ltag">${l.type}</span>
+        <span class="lmeta">延迟 ${l.delayMs}ms · 时长 ${l.durMs}ms · 帧 ${l.ip}→${l.op}</span>
+      </div>
+      ${propCards}
+    </div>`;
+  }).join('');
+
+  return`<!DOCTYPE html><html lang="zh"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${d.nm||'动画'} — 开发交付文档</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,sans-serif;background:#f2f2f7;color:#1c1c1e;font-size:13px;line-height:1.5}
+.header{background:#fff;border-bottom:1px solid #e5e5e5;padding:16px 24px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.header-title{font-size:16px;font-weight:700;flex:1}
+.header-meta{font-size:12px;color:#888;display:flex;gap:16px}
+.dl-btn{padding:8px 16px;background:#1c1c1e;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px}
+.dl-btn:hover{background:#333}
+.wrap{max-width:860px;margin:0 auto;padding:20px 16px;display:flex;flex-direction:column;gap:16px}
+.lcard{background:#fff;border-radius:14px;border:1px solid #e5e5e5;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.lcard-head{padding:12px 16px;background:#fafafa;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.lname{font-size:14px;font-weight:700}
+.ltag{font-size:10px;padding:2px 7px;border-radius:5px;background:#f0f0f0;color:#666;font-weight:600}
+.lmeta{font-size:11px;color:#999;margin-left:auto;font-family:monospace}
+.pcard{border:1px solid;border-radius:10px;margin:10px;overflow:hidden}
+.pcard-head{padding:9px 13px;display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(0,0,0,.06)}
+.ptag{font-size:10px;font-weight:800;padding:3px 8px;border-radius:5px;letter-spacing:.04em}
+.pname{font-size:13px;font-weight:600;flex:1}
+.pkfs{font-size:11px;color:#999}
+.tl-mini{height:32px;position:relative;margin:8px 13px;border-radius:6px;background:#f5f5f5;border:1px solid #e5e5e5;overflow:visible}
+.krow{padding:9px 13px;border-top:1px solid rgba(0,0,0,.05);cursor:pointer;transition:background .12s;display:flex;align-items:center;gap:10px}
+.krow:hover{background:#f8f8f8}
+.krow.copied{background:#f0fdf4}
+.krow-main{flex:1;display:flex;gap:0;flex-wrap:wrap}
+.kval{font-family:'SF Mono',Menlo,monospace;font-size:12px;padding:3px 12px;border-right:1px solid #f0f0f0;color:#1c1c1e}
+.kval:last-child{border-right:none}
+.kval b{color:#888;font-weight:600;margin-right:4px;font-size:11px}
+.curve-val{color:#555;font-style:italic}
+.copy-hint{font-size:10px;color:#aaa;flex-shrink:0;white-space:nowrap}
+.krow:hover .copy-hint{color:#666}
+.player-card{background:#fff;border-radius:14px;border:1px solid #e5e5e5;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.player-inner{padding:20px;display:flex;justify-content:center;background:#f8f8f8}
+.overview-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:14px;border-top:1px solid #f0f0f0}
+.ob-chip{background:#f5f5f5;border-radius:8px;padding:10px 13px;border:1px solid #e8e8e8}
+.ob-label{font-size:10px;color:#999;text-transform:uppercase;letter-spacing:.04em;font-weight:600;margin-bottom:3px}
+.ob-val{font-size:18px;font-weight:700;font-family:monospace}
+.ob-unit{font-size:11px;color:#999;font-weight:400}
+.toast-d{position:fixed;bottom:20px;right:20px;background:#1c1c1e;color:#fff;padding:8px 16px;border-radius:8px;font-size:12px;font-weight:600;opacity:0;transition:opacity .25s;pointer-events:none;z-index:9999}
+.toast-d.show{opacity:1}
+</style></head><body>
+<div class="header">
+  <div>
+    <div class="header-title">🎬 ${d.nm||'动画'} — 开发交付文档</div>
+    <div class="header-meta"><span>总时长 ${dur}ms</span><span>帧率 ${fps}fps</span><span>${d.w}×${d.h}</span><span>${(d.layers||[]).length} 图层</span></div>
+  </div>
+  <button class="dl-btn" onclick="dlJSON()">↓ 下载 Lottie JSON</button>
+</div>
+<div class="wrap">
+  <div class="player-card">
+    <div class="player-inner"><div id="dp" style="width:200px;height:200px"></div></div>
+    <div class="overview-bar">
+      <div class="ob-chip"><div class="ob-label">总时长</div><div class="ob-val">${dur}<span class="ob-unit"> ms</span></div></div>
+      <div class="ob-chip"><div class="ob-label">帧率</div><div class="ob-val">${fps}<span class="ob-unit"> fps</span></div></div>
+      <div class="ob-chip"><div class="ob-label">尺寸</div><div class="ob-val" style="font-size:14px">${d.w}<span class="ob-unit">×</span>${d.h}</div></div>
+      <div class="ob-chip"><div class="ob-label">图层</div><div class="ob-val">${(d.layers||[]).length}</div></div>
+    </div>
+  </div>
+  ${layerCards}
+</div>
+<div class="toast-d" id="toastD"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"><\/script>
+<script>
+const LD=${JSON.stringify(d)};
+lottie.loadAnimation({container:document.getElementById('dp'),renderer:'svg',loop:true,autoplay:true,animationData:JSON.parse(JSON.stringify(LD))});
+function dlJSON(){const b=new Blob([JSON.stringify(LD,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='${(d.nm||'animation').replace(/'/g,'')}.json';a.click()}
+function cp(text,el){navigator.clipboard.writeText(text.replace(/\\\\n/g,'\\n')).then(()=>{el.classList.add('copied');el.querySelector('.copy-hint').textContent='✓ 已复制';setTimeout(()=>{el.classList.remove('copied');el.querySelector('.copy-hint').textContent='点击复制'},1500)});const t=document.getElementById('toastD');t.textContent='参数已复制';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)}
+<\/script>
+</body></html>`;
+}
+
+function loadSample(){
+  const s={"v":"5.7.4","fr":30,"ip":0,"op":60,"w":400,"h":400,"nm":"Bounce & Fade","ddd":0,"assets":[],"layers":[{"ddd":0,"ind":1,"ty":4,"nm":"Ball","sr":1,"ks":{"o":{"a":1,"k":[{"i":{"x":0.5,"y":1},"o":{"x":0.5,"y":0},"t":0,"s":[0],"e":[100]},{"i":{"x":0.5,"y":1},"o":{"x":0.5,"y":0},"t":15,"s":[100],"e":[100]},{"t":50,"s":[100]}]},"r":{"a":1,"k":[{"i":{"x":0.5,"y":1},"o":{"x":0.5,"y":0},"t":0,"s":[0],"e":[180]},{"t":60,"s":[360]}]},"p":{"a":1,"k":[{"i":{"x":0.42,"y":1},"o":{"x":0.58,"y":0},"t":0,"s":[200,80,0],"e":[200,300,0]},{"i":{"x":0.42,"y":1},"o":{"x":0.58,"y":0},"t":30,"s":[200,300,0],"e":[200,80,0]},{"t":60,"s":[200,80,0]}]},"a":{"a":0,"k":[0,0,0]},"s":{"a":1,"k":[{"i":{"x":0.5,"y":1},"o":{"x":0.5,"y":0},"t":0,"s":[100,100,100],"e":[100,100,100]},{"i":{"x":0.5,"y":1},"o":{"x":0.5,"y":0},"t":28,"s":[100,100,100],"e":[130,70,100]},{"i":{"x":0.5,"y":1},"o":{"x":0.5,"y":0},"t":32,"s":[130,70,100],"e":[100,100,100]},{"t":60,"s":[100,100,100]}]}},"ao":0,"shapes":[{"ty":"gr","it":[{"ty":"el","nm":"Circle","p":{"a":0,"k":[0,0]},"s":{"a":0,"k":[80,80]}},{"ty":"fl","nm":"Fill","c":{"a":1,"k":[{"i":{"x":0.5,"y":1},"o":{"x":0.5,"y":0},"t":0,"s":[0.216,0.612,0.863,1],"e":[0.863,0.333,0.188,1]},{"i":{"x":0.5,"y":1},"o":{"x":0.5,"y":0},"t":30,"s":[0.863,0.333,0.188,1],"e":[0.216,0.612,0.863,1]},{"t":60,"s":[0.216,0.612,0.863,1]}]},"o":{"a":0,"k":100},"r":1},{"ty":"tr","p":{"a":0,"k":[0,0]},"a":{"a":0,"k":[0,0]},"s":{"a":0,"k":[100,100]},"r":{"a":0,"k":0},"o":{"a":0,"k":100},"sk":{"a":0,"k":0},"sa":{"a":0,"k":0},"nm":"T"}],"nm":"G1"}],"ip":0,"op":60,"st":0,"bm":0},{"ddd":0,"ind":2,"ty":4,"nm":"Shadow","sr":1,"ks":{"o":{"a":1,"k":[{"i":{"x":0.5,"y":1},"o":{"x":0.5,"y":0},"t":0,"s":[20],"e":[70]},{"i":{"x":0.5,"y":1},"o":{"x":0.5,"y":0},"t":30,"s":[70],"e":[20]},{"t":60,"s":[20]}]},"r":{"a":0,"k":0},"p":{"a":0,"k":[200,340,0]},"a":{"a":0,"k":[0,0,0]},"s":{"a":1,"k":[{"i":{"x":0.5,"y":1},"o":{"x":0.5,"y":0},"t":0,"s":[60,60,100],"e":[130,40,100]},{"i":{"x":0.5,"y":1},"o":{"x":0.5,"y":0},"t":30,"s":[130,40,100],"e":[60,60,100]},{"t":60,"s":[60,60,100]}]}},"ao":0,"shapes":[{"ty":"gr","it":[{"ty":"el","nm":"Shadow","p":{"a":0,"k":[0,0]},"s":{"a":0,"k":[60,20]}},{"ty":"fl","nm":"Fill","c":{"a":0,"k":[0,0,0,1]},"o":{"a":0,"k":50},"r":1},{"ty":"tr","p":{"a":0,"k":[0,0]},"a":{"a":0,"k":[0,0]},"s":{"a":0,"k":[100,100]},"r":{"a":0,"k":0},"o":{"a":0,"k":100},"sk":{"a":0,"k":0},"sa":{"a":0,"k":0},"nm":"T"}],"nm":"G2"}],"ip":0,"op":60,"st":0,"bm":0}]};
+  init(s);
+}
+</script>
